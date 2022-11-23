@@ -1,18 +1,18 @@
 from tkinter import ttk, Tk, Canvas, Entry, Text, Button, PhotoImage, Toplevel, Label, Frame
 from tkinter import font as tkfont
 import tkinter as tk
-from model_app import Model
 from kegiatan import Kegiatan
 from kategori import Kategori
 from tkinter import messagebox
 from datetime import datetime
+from model_app import Model
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        
+
         ## CONNECT DATABASE
-        Model.create_table(self)   ## udah dibikin
+        # Model.create_table(self)   ## udah dibikin
 
         ## VARIABEL
         #### Variabel Tambah Kegiatan
@@ -351,20 +351,28 @@ class App(tk.Tk):
         print(self.INPUT_KATEGORI.get())
         print(self.get_id_kategori_by_nama(self.INPUT_KATEGORI.get()))
         # try:
-        if self.INPUT_NAMA_KEGIATAN.get() == "" or self.INPUT_BATAS_WAKTU.get() == "":
-            messagebox.showerror("Error", "Oops, jangan lupa masukkan nama kegiatan dan batas waktu yaa")
+        if self.INPUT_NAMA_KEGIATAN.get() == "" or self.INPUT_BATAS_WAKTU.get() == "" or self.INPUT_KATEGORI.get() == "":
+            messagebox.showerror("Error", "Oops, jangan lupa masukkan seluruh field")
         else:
             id = 0
             for i in range(0, len(self.get_list_class_kegiatan(Model.get_all_kegiatan_with_nama_kategori(self)))):
                 if i == (len(self.get_list_class_kegiatan(Model.get_all_kegiatan_with_nama_kategori(self)))-1):
                     id = self.get_list_class_kegiatan(Model.get_all_kegiatan_with_nama_kategori(self))[i].id + 1
+            print("IDD", id)
             # Update status expired
             date_time_obj = datetime.strptime(self.INPUT_BATAS_WAKTU.get(), '%Y-%m-%d')
-            if (datetime.now().year > date_time_obj.year and datetime.now().month > date_time_obj.month and datetime.now().day > date_time_obj.day):
-                kegiatan = Kegiatan(id, self.INPUT_NAMA_KEGIATAN.get(), self.INPUT_BATAS_WAKTU.get(), 'Expired', self.get_id_kategori_by_nama(self.INPUT_KATEGORI.get()))
+            status = 'On Going'
+            if (datetime.now().year > date_time_obj.year):
+                status = 'Expired'
             else:
-                kegiatan = Kegiatan(id, self.INPUT_NAMA_KEGIATAN.get(), self.INPUT_BATAS_WAKTU.get(), 'On Going', self.get_id_kategori_by_nama(self.INPUT_KATEGORI.get()))
-            print(kegiatan.status)
+                if (datetime.now().month > date_time_obj.month):
+                    status = 'Expired'
+                else:
+                    if (datetime.now().day > date_time_obj.day):
+                        status = 'Expired'
+                    else:
+                        pass
+            kegiatan = Kegiatan(id, self.INPUT_NAMA_KEGIATAN.get(), self.INPUT_BATAS_WAKTU.get(), status, self.get_id_kategori_by_nama(self.INPUT_KATEGORI.get()))
             Model.insert_kegiatan(self, kegiatan)
         # except:
             # messagebox.showerror("Error", "Error Occured")
@@ -442,7 +450,6 @@ class App(tk.Tk):
         self.pop_up.destroy()
     
     def render_data_kegiatan_all(self):
-        today = datetime.now()
         self.tree.delete(*self.tree.get_children())
         list_kegiatan = self.get_list_kegiatan(self.get_list_class_kegiatan(Model.get_all_kegiatan_with_nama_kategori(self)))
         # Add data to the treeview
@@ -450,8 +457,14 @@ class App(tk.Tk):
         for kegiatan in list_kegiatan:
             # Update status expired
             date_time_obj = datetime.strptime(kegiatan[2], '%Y-%m-%d')
-            if (datetime.now().year > date_time_obj.year and datetime.now().month > date_time_obj.month and datetime.now().day > date_time_obj.day) and (kegiatan[4] == 'On Going'):
+            if (datetime.now().year > date_time_obj.year):
                 Model.update_status(self, kegiatan[0], 'Expired')
+            else:
+                if (datetime.now().month > date_time_obj.month):
+                    Model.update_status(self, kegiatan[0], 'Expired')
+                else:
+                    if (datetime.now().day > date_time_obj.day):
+                        Model.update_status(self, kegiatan[0], 'Expired')
             # Show
             self.tree.insert('', tk.END, values=kegiatan)
     
