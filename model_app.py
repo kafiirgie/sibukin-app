@@ -52,14 +52,12 @@ class Model():
         self.conn = sqlite3.connect('sibukin.db')
         self.c = self.conn.cursor()
         self.c.execute("SELECT * FROM kegiatan")
-        # self.conn.close()
         return self.c.fetchall()
 
     def get_all_kegiatan_with_nama_kategori(self):
         self.conn = sqlite3.connect('sibukin.db')
         self.c = self.conn.cursor()
         self.c.execute("SELECT * FROM kegiatan INNER JOIN kategori USING(id_kategori)")
-        # self.conn.close()
         return self.c.fetchall()
     
     def get_kegiatan_filtered_today(self):
@@ -79,8 +77,8 @@ class Model():
         self.conn = sqlite3.connect('sibukin.db')
         self.c = self.conn.cursor()
         print(kategori)
-        # self.c.execute(f"SELECT * FROM kegiatan INNER JOIN kategori USING(id_kategori) WHERE nama_kategori = '{kategori}'")
-        self.c.execute("SELECT * FROM kegiatan INNER JOIN kategori USING(id_kategori) WHERE nama_kategori = :nama_kategori", {'nama_kategori':kategori})
+        self.c.execute(f"SELECT * FROM kegiatan INNER JOIN kategori USING(id_kategori) WHERE nama_kategori = '{kategori}'")
+        # self.c.execute("SELECT * FROM kegiatan INNER JOIN kategori USING(id_kategori) WHERE nama_kategori = :nama_kategori", {'nama_kategori':kategori})
         return self.c.fetchall()
     
     def get_kegiatan_filtered_status_kategori(self, status, kategori):
@@ -111,21 +109,18 @@ class Model():
         self.conn = sqlite3.connect('sibukin.db')
         self.c = self.conn.cursor()
         self.c.execute("SELECT * FROM kategori")
-        # self.conn.close()
         return self.c.fetchall()
 
     def get_kegiatan_by_id(self, id):
         self.conn = sqlite3.connect('sibukin.db')
         self.c = self.conn.cursor()
         self.c.execute("SELECT * FROM kegiatan WHERE id_kegiatan=:id_kegiatan", {'id_kegiatan': id})
-        # self.conn.close()
         return self.c.fetchone()
 
     def get_kategori_by_id(self, id):
         self.conn = sqlite3.connect('sibukin.db')
         self.c = self.conn.cursor()
         self.c.execute("SELECT nama_kategori FROM kategori WHERE id_kategori=:id_kategori", {'id_kategori': id})
-        # self.conn.close()
         return self.c.fetchone()
 
     def update_status(self, id, new_status):
