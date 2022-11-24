@@ -6,13 +6,14 @@ from kategori import Kategori
 from tkinter import messagebox
 from datetime import datetime
 from model_app import Model
+from PIL import Image, ImageTk
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
         ## CONNECT DATABASE
-        # Model.create_table(self)   ## udah dibikin
+        Model.create_table(self)   ## udah dibikin
 
         ## VARIABEL
         #### Variabel Tambah Kegiatan
@@ -82,8 +83,7 @@ class App(tk.Tk):
         self.render_data_kegiatan_all()
         
         ## BUTTON DELETE
-        self.button_image_del = PhotoImage(
-            file="./assets/button_del.png")
+        self.button_image_del = ImageTk.PhotoImage(Image.open("./assets/button_del.png"))
         self.button_del = Button(
             image=self.button_image_del,
             borderwidth=0,
@@ -99,8 +99,9 @@ class App(tk.Tk):
         )
 
         ## BUTTON MARK AS DONE
-        self.button_image_done = PhotoImage(
-            file="./assets/button_done.png")
+        self.button_image_done = ImageTk.PhotoImage(Image.open("./assets/button_done.png"))
+        #  self.button_image_done = PhotoImage(
+        #     file="./assets/button_done.png")
         self.button_done = Button(
             image=self.button_image_done,
             borderwidth=0,
@@ -116,8 +117,9 @@ class App(tk.Tk):
         )
 
         ## BUTTON FILTER
-        self.button_image_filter = PhotoImage(
-            file="./assets/button_filter.png")
+        self.button_image_filter = ImageTk.PhotoImage(Image.open("./assets/button_filter.png"))
+        # self.button_image_filter = PhotoImage(
+        #     file="./assets/button_filter.png")
         self.button_filter = Button(
             image=self.button_image_filter,
             borderwidth=0,
@@ -142,8 +144,9 @@ class App(tk.Tk):
             outline="")
 
         ## BUTTON TAMBAH KATEGORI
-        self.button_image_kategori = PhotoImage(
-            file="./assets/button_kategori.png")
+        self.button_image_kategori = ImageTk.PhotoImage(Image.open("./assets/button_kategori.png"))
+        # self.button_image_kategori = PhotoImage(
+        #     file="./assets/button_kategori.png")
         self.button_kategori = Button(
             image=self.button_image_kategori,
             borderwidth=0,
@@ -159,8 +162,9 @@ class App(tk.Tk):
         )
 
         ## BUTTON TAMBAH KEGIATAN
-        self.button_image_kegiatan = PhotoImage(
-            file="./assets/button_kegiatan.png")
+        self.button_image_kegiatan = ImageTk.PhotoImage(Image.open("./assets/button_kegiatan.png"))
+        # self.button_image_kegiatan = PhotoImage(
+        #     file="./assets/button_kegiatan.png")
         self.button_kegiatan = Button(
             image=self.button_image_kegiatan,
             borderwidth=0,
@@ -191,8 +195,9 @@ class App(tk.Tk):
             fill="#263238",
             font=("Lexend Regular", 16 * -1)
         )
-        self.logo = PhotoImage(
-            file="./assets/logo.png")
+        self.logo = ImageTk.PhotoImage(Image.open("./assets/logo.png"))
+        # self.logo = PhotoImage(
+        #     file="./assets/logo.png")
         self.image_logo = canvas.create_image(
             480.0,
             65.0,
@@ -364,10 +369,10 @@ class App(tk.Tk):
             status = 'On Going'
             if (datetime.now().year > date_time_obj.year):
                 status = 'Expired'
-            else:
+            elif (datetime.now().year == date_time_obj.year):
                 if (datetime.now().month > date_time_obj.month):
                     status = 'Expired'
-                else:
+                elif (datetime.now().month == date_time_obj.month):
                     if (datetime.now().day > date_time_obj.day):
                         status = 'Expired'
                     else:
@@ -459,10 +464,10 @@ class App(tk.Tk):
             date_time_obj = datetime.strptime(kegiatan[2], '%Y-%m-%d')
             if (datetime.now().year > date_time_obj.year):
                 Model.update_status(self, kegiatan[0], 'Expired')
-            else:
+            elif (datetime.now().year == date_time_obj.year):
                 if (datetime.now().month > date_time_obj.month):
                     Model.update_status(self, kegiatan[0], 'Expired')
-                else:
+                elif (datetime.now().month == date_time_obj.month):
                     if (datetime.now().day > date_time_obj.day):
                         Model.update_status(self, kegiatan[0], 'Expired')
             # Show
