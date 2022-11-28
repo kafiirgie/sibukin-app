@@ -210,6 +210,7 @@ class App(tk.Tk):
     def show_pop_up_kegiatan(self):
         # DEFINE GUI
         self.pop_up = Toplevel(self)
+        self.pop_up.grab_set()
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
         x = int(width / 2 - 300 / 2)
@@ -241,6 +242,7 @@ class App(tk.Tk):
                                          bg='#CFD8DC',
                                          fg='#455A64',
                                          font=("Segoe UI", 12))
+        fields['entry_kegiatan'].focus_force()
         fields['label_batas_waktu'] = Label(self.pop_up_frame_content,
                                             text='Batas Waktu YYYY-MM-DD:',
                                             font=("Segoe UI Semibold", 12))
@@ -269,11 +271,13 @@ class App(tk.Tk):
                                    font=("Segoe UI Semibold", 10),
                                    command=self.submit_kegiatan)
         self.button_kirim.pack(ipadx=78, ipady=2, pady=32)
+        self.pop_up.bind('<Return>', self.submit_kegiatan)
 
     # Menampilkan pop up berisi fields untuk input tambah kategori baru
     def show_pop_up_kategori(self):
         # DEFINE GUI
         self.pop_up = Toplevel(self)
+        self.pop_up.grab_set()
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
         x = int(width / 2 - 300 / 2)
@@ -307,6 +311,7 @@ class App(tk.Tk):
                                          bg='#CFD8DC',
                                          fg='#455A64',
                                          font=("Segoe UI", 12))
+        fields['entry_kategori'].focus_force()
         for field in fields.values():
             field.pack(anchor=tk.W, padx=12, pady=4, ipady=4)
         #### Submit Button
@@ -316,11 +321,14 @@ class App(tk.Tk):
                                    font=("Segoe UI Semibold", 10),
                                    command=self.submit_kategori)
         self.button_kirim.pack(ipadx=78, ipady=2, pady=16)
+        self.pop_up.bind('<Return>', self.submit_kategori)
 
     # Menampilkan pop up berisi fields untuk input filter
     def show_pop_up_filter(self):
         # DEFINE GUI
         self.pop_up = Toplevel(self)
+        self.pop_up.grab_set()
+        self.pop_up.focus_force()
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
         x = int(width / 2 - 300 / 2)
@@ -382,9 +390,10 @@ class App(tk.Tk):
                                    font=("Segoe UI Semibold", 10),
                                    command=self.submit_filter)
         self.button_kirim.pack(ipadx=78, ipady=2, pady=32)
+        self.pop_up.bind('<Return>', self.submit_filter)
 
     # Melakukan prosedur setelah menekan tombol kirim pada fitur tambah kegiatan
-    def submit_kegiatan(self):
+    def submit_kegiatan(self, event=None):
         try:
             if self.INPUT_NAMA_KEGIATAN.get() == "" or self.INPUT_BATAS_WAKTU.get() == "":
                 raise ValueError("Oops, jangan lupa masukkan nama kegiatan dan batas waktu yaa")
@@ -419,7 +428,7 @@ class App(tk.Tk):
         self.render_data_kegiatan_all()
 
     # Melakukan prosedur setelah menekan tombol kirim pada fitur tambah kategori    
-    def submit_kategori(self):
+    def submit_kategori(self, event=None):
         try:
             if self.INPUT_NAMA_KATEGORI.get() == "" :
                 raise ValueError("Oops, jangan lupa masukkan nama kategori yaa")
@@ -439,7 +448,10 @@ class App(tk.Tk):
         selected_item = self.tree.focus()
         id = self.tree.item(selected_item).get('values')[0]
         try:
-            self.model.delete_kegiatan_by_id(id)
+            if (messagebox.askokcancel(title="Hapus Kegiatan", message="Apakah Anda yakin ingin menghapus kegiatan tersebut?")):
+                self.model.delete_kegiatan_by_id(id)
+            else:
+                pass
         except:
             messagebox.showerror("Error", "Error Occured")
         self.render_data_kegiatan_all()
@@ -459,7 +471,7 @@ class App(tk.Tk):
         self.render_data_kegiatan_all()
 
     # Melakukan prosedur setelah menekan tombol kirim pada fitur filter
-    def submit_filter(self):
+    def submit_filter(self, event=None):
         try:
             if self.INPUT_FILTER_STATUS.get() != "":
                 if self.INPUT_FILTER_KATEGORI.get() == "" and self.INPUT_FILTER_WAKTU.get() == "":
